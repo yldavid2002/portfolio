@@ -3,76 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>David Ho | AI & Quality Portfolio</title>
+    <title>David Ho | AI & Quality Strategy Portfolio</title>
     
-    <!-- Fixed CDN Links (No Markdown formatting) -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
-    <script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
-    <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
-    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+    <!-- Core Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        .text-glow { text-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes zoom-in { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .animate-in { animation: fade-in 0.3s ease-out; }
-        .zoom-in { animation: zoom-in 0.3s ease-out; }
-        #error-display { color: #ff4444; padding: 20px; font-family: sans-serif; display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            scroll-behavior: smooth;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body class="bg-slate-950">
-    <div id="error-display"></div>
+<body class="text-slate-200">
     <div id="root"></div>
-
-    <!-- Error Handling Script -->
-    <script>
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            const display = document.getElementById('error-display');
-            display.style.display = 'block';
-            display.innerHTML = '<h4>Loading Error:</h4>' + msg + '<br><small>Line: ' + lineNo + '</small>';
-            return false;
-        };
-    </script>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
-        // Accessing lucide from the global window object
-        const { 
-            Github, Linkedin, Mail, Phone, ExternalLink, Award, Terminal, 
-            Database, Cpu, Briefcase, GraduationCap, Trophy, ChevronRight, 
-            Code, Clock, CheckCircle2, Filter, FileText, X, Target, Zap, 
-            ShieldCheck, Search, Network, UserCog 
-        } = lucide;
 
         const App = () => {
             const [activeTier, setActiveTier] = useState('ALL');
-            const [activeStatus, setActiveStatus] = useState('ALL');
             const [selectedProject, setSelectedProject] = useState(null);
             const [researchImageUrl, setResearchImageUrl] = useState("");
             const [isGenerating, setIsGenerating] = useState(false);
 
-            const apiKey = ""; 
+            const apiKey = "";
+
+            const fetchWithRetry = async (url, options, retries = 5, backoff = 1000) => {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (retries > 0) {
+                        await new Promise(resolve => setTimeout(resolve, backoff));
+                        return fetchWithRetry(url, options, retries - 1, backoff * 2);
+                    }
+                    throw error;
+                }
+            };
 
             useEffect(() => {
                 const generateResearchImage = async () => {
-                    if(!apiKey) return;
                     setIsGenerating(true);
                     try {
-                        const prompt = "A highly professional, futuristic, and clean concept art representing 'AI Quality Assurance and Autonomous Agents'.";
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{ parts: [{ text: prompt }] }],
-                                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-                            })
-                        });
-                        const result = await response.json();
+                        const prompt = "A high-end, cinematic visualization of AI Autonomous Agents and Quality Assurance. Abstract neural networks merging with technical blueprints, blue and cyan neon accents, deep shadows, 8k resolution, professional photography style.";
+                        const result = await fetchWithRetry(
+                            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: prompt }] }],
+                                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                                })
+                            }
+                        );
                         const base64 = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
                         if (base64) setResearchImageUrl(`data:image/png;base64,${base64}`);
                     } catch (error) {
-                        console.error("Error:", error);
+                        console.error("Image generation failed:", error);
                     } finally {
                         setIsGenerating(false);
                     }
@@ -80,68 +101,480 @@
                 generateResearchImage();
             }, []);
 
-            const tierColors = {
-                GOLD: 'from-amber-300 via-yellow-500 to-amber-600',
-                SILVER: 'from-slate-200 via-slate-400 to-slate-500',
-                BRONZE: 'from-orange-400 via-orange-600 to-amber-800'
+            const tierStyles = {
+                GOLD: {
+                    border: 'border-amber-500/50',
+                    text: 'text-amber-400',
+                    bg: 'bg-amber-500/10',
+                    gradient: 'from-amber-300 via-yellow-500 to-amber-600'
+                },
+                SILVER: {
+                    border: 'border-slate-400/50',
+                    text: 'text-slate-300',
+                    bg: 'bg-slate-400/10',
+                    gradient: 'from-slate-200 via-slate-400 to-slate-500'
+                },
+                BRONZE: {
+                    border: 'border-orange-700/50',
+                    text: 'text-orange-500',
+                    bg: 'bg-orange-700/10',
+                    gradient: 'from-orange-400 via-orange-600 to-amber-800'
+                }
             };
 
-            const projects = [
-                { id: 4, tier: 'GOLD', status: 'COMPLETED', title: 'Quality Requirement Framework', description: 'Industry-proven quality requirement framework.', longDescription: 'A master-level framework refined over 20 years in enterprise QA.', tech: ['Testing', 'Strategy'], color: tierColors.GOLD, pdfUrl: '#' },
-                { id: 1, tier: 'BRONZE', status: 'COMPLETED', title: 'Test Strategy Advisor', description: 'AI Agent utilizing MCP.', longDescription: 'Leverages LangGraph for agentic reasoning loops.', tech: ['MCP', 'LLM'], color: tierColors.BRONZE, pdfUrl: '#' },
-                { id: 7, tier: 'BRONZE', status: 'ACTIVE', title: 'AI Governance Framework', description: 'Governance for AI content.', longDescription: 'Mitigates hallucination risks and ensures safety.', tech: ['Governance', 'LLM'], color: tierColors.BRONZE, pdfUrl: null }
+const projects = [
+                { 
+                    id: 1, 
+                    tier: 'BRONZE', 
+                    status: 'COMPLETED', 
+                    title: 'Test Strategy Advisor', 
+                    description: 'The Test Strategy Advisor is an innovative AI Agent that utilizes Model Context Protocol (MCP) to access project requirements and technical documentation. By leveraging a Large Language Model (LLM) and LangGraph, it automates the creation of comprehensive and risk-based software testing strategies, significantly reducing manual effort while ensuring high quality.', 
+                    longDescription: 'The Test Strategy Advisor represents a shift in how QA teams approach planning. Traditional strategy formulation requires a QA expert onboard very early upfront which is not affordable to many organization. This agent collects the project document. It then uses a LangGraph-based reasoning loop to evaluate architectural risks, identify critical business paths, and propose a tailored testing approach—including which levels of testing (Unit, Integration, E2E) are required for specific changes. This ensures that testing effort is always aligned with technical risk and business value, accelerating the SDLC while maintaining enterprise-grade rigor.',
+                    tech: ['MCP', 'LangGraph', 'LLM', 'RAG'], 
+                    pdfUrl: 'https://yldavid2002.github.io/Test-Strategy-Advisor/AI-Powered%20Test%20Strategy%20Generator.pdf' 
+                },
+                { 
+                    id: 2, 
+                    tier: 'BRONZE', 
+                    status: 'COMPLETED', 
+                    title: 'Predictive Loan Approval Engine', 
+                    description: 'This high-precision financial assessment model employs complex machine learning algorithms to predict the likelihood of personal loan approval. By analyzing diverse borrower data points, the engine provides accurate risk assessments, enabling financial institutions to make data-driven lending decisions with confidence.', 
+                    longDescription: 'Developed to address the challenges of traditional credit scoring, this engine utilizes a robust machine learning pipeline. It processes multi-dimensional datasets including credit history, income stability, debt-to-income ratios, and behavioral patterns. I implemented advanced gradient boosting techniques (XGBoost and LightGBM) to handle non-linear relationships and class imbalances common in financial data while achieving a 95% precision rate in approval suggestion.',
+                    tech: ['XGBoost', 'LightGBM', 'Python', 'Scikit-Learn'], 
+                    pdfUrl: 'https://yldavid2002.github.io/Personal-Loan-Approval-Prediction/Personal%20Loan%20Approval%20Prediction.pdf' 
+                },
+                { 
+                    id: 3, 
+                    tier: 'BRONZE', 
+                    status: 'COMPLETED', 
+                    title: 'Bitcoin Market Analytics', 
+                    description: 'The Bitcoin Market Analytics project provides real-time data ingestion and visualization of cryptocurrency trends. Featuring a robust data pipeline and a dynamic Power BI dashboard, it offers deep-dive insights into market volatility, volume patterns, and sentiment, empowering users with actionable market intelligence.', 
+                    longDescription: 'This project showcases a full-scale data engineering lifecycle. I built a Python-based ingestion engine that interfaces with real-time exchange APIs to stream trade and order book data into a structured SQL environment. The ETL process handles data cleaning and normalization across various exchange formats. The final visualization layer, built in Power BI, provides users with interactive dashboards for tracking price trends, volume spikes, and moving averages. It also incorporates social sentiment analysis to correlate market movements with public discourse, providing a holistic view of the cryptocurrency landscape.',
+                    tech: ['Python', 'Power BI', 'SQL', 'Data Engineering'], 
+                    pdfUrl: null 
+                },
+                { 
+                    id: 4, 
+                    tier: 'GOLD', 
+                    status: 'COMPLETED', 
+                    title: 'Quality Requirement Framework', 
+                    description: 'This industry-proven quality requirement framework is designed to be adaptable across all types of project implementations. It establishes a standardized approach to defining and measuring quality throughout the software development life cycle, ensuring consistent and high-quality outcomes for any enterprise.', 
+                    longDescription: 'Representing over two decades of leadership in IT Quality Assurance, this "Master Framework" is my signature contribution to the field. It moves beyond generic checklists to provide a scalable, attribute-driven methodology for quality architecture. The framework covers critical dimensions: Functional Correctness, Performance Efficiency, Security Robustness, Location, Localization, Battery, Usability, Accessibility, Operational, Data, Compatibility and Cost. It introduces standardized testing Dependencies, entry and exit criteria that integrate into the SDLC from day one. Successfully deployed in multiple Fortune 500 environments, it has consistently reduced post-release defect density and improved time-to-market by ensuring requirements are "testable" and "verifiable" from the start.',
+                    tech: ['Testing Strategy', 'QA Governance', 'Enterprise SDLC'], 
+                    pdfUrl: null 
+                },
+                { 
+                    id: 5, 
+                    tier: 'BRONZE', 
+                    status: 'ACTIVE', 
+                    title: 'AI-powered Traceability Matrix', 
+                    description: 'This active project leverages AI to automate the creation and maintenance of traceability matrices. By semantically mapping requirements to test cases, it ensures full coverage and eliminates manual errors, streamlining the quality assurance process and enhancing project transparency.', 
+                    longDescription: 'The manual maintenance of Requirements Traceability Matrices (RTM) is one of the most tedious and error-prone tasks in large-scale software projects. This tool utilizes transformer-based NLP models and LangGraph to perform semantic mapping between natural language requirement documents and technical test scripts. It automatically detects gaps in testing, flags requirements without associated test cases, and identifies redundant tests. By providing real-time visibility into test coverage throughout the development cycle, it ensures that no requirement is overlooked, significantly reducing compliance risks and ensuring project alignment with business goals.',
+                    tech: ['RTM', 'LangGraph', 'NLP', 'Semantic Search'], 
+                    pdfUrl: null 
+                },
+                { 
+                    id: 6, 
+                    tier: 'BRONZE', 
+                    status: 'ACTIVE', 
+                    title: 'Critical Path Finder', 
+                    description: 'The Critical Path Finder uses LLMs to analyze project timelines and identify the critical path. By intelligently evaluating task dependencies and potential bottlenecks, it provides project managers with a clearer understanding of schedule risks and enables more effective resource allocation.', 
+                    longDescription: 'Traditional project management tools often fail to capture the nuance of "soft dependencies" or hidden bottlenecks in complex software delivery. This project employs Large Language Models and industry best practice to analyze project timelines to uncover dependencies that aren\'t explicitly defined in Gantt charts. It calculates a more realistic critical path by accounting for resource cross-loading, technical complexity, and historical team velocity. This allows project leads to anticipate delays weeks in advance and make proactive adjustments to resource allocation or scope, ensuring on-time delivery in fast-paced Agile environments.',
+                    tech: ['Vector DB', 'LLM', 'Project Management AI'], 
+                    pdfUrl: null 
+                },
+                { 
+                    id: 7, 
+                    tier: 'BRONZE', 
+                    status: 'ACTIVE', 
+                    title: 'AI Governance Framework', 
+                    description: 'This framework establishes governance benchmarks for AI-generated content to mitigate the risk of hallucinations. It provides a structured approach to evaluating and validating AI outputs, ensuring that content remains accurate, safe, and aligned with organizational standards.', 
+                    longDescription: 'As enterprises race to adopt Generative AI, the need for robust governance has never been higher. This project develops an "LLM-as-a-Judge" architecture designed to provide automated quality control over AI outputs. I am establishing standardized benchmarks for evaluating truthfulness, toxicity, and adherence to brand voice. The framework includes a suite of automated tests that run against model outputs to detect hallucinations and regressions. By integrating these benchmarks into the CI/CD pipeline, organizations can deploy AI solutions with the confidence that they meet established safety and accuracy thresholds, effectively mitigating the risks associated with non-deterministic AI behavior.',
+                    tech: ['LLM-Judge', 'AI Ethics', 'Hallucination Testing'], 
+                    pdfUrl: null 
+                },
+                { 
+                    id: 8, 
+                    tier: 'BRONZE', 
+                    status: 'ACTIVE', 
+                    title: 'Internet of AI', 
+                    description: 'The Internet of AI is a research-focused project exploring decentralized AI collaboration and the path to superintelligence. It investigates how autonomous AI agents can network and share knowledge to solve complex problems, pushing the boundaries of what is possible with artificial intelligence.', 
+                    longDescription: 'This research project explores the future of decentralized machine intelligence. Rather than relying on monolithic models, the "Internet of AI" focuses on an ecosystem of specialized, autonomous agents that communicate via open protocols. The research investigates how these agents can discover each other, negotiate task sharing, and collaboratively solve multi-domain problems that are beyond the scope of any single model. This includes exploring decentralized knowledge graphs and agent-to-agent communication standards. The goal is to move toward a more resilient, scalable, and intelligent AI infrastructure that mirrors the collaborative nature of human society.',
+                    tech: ['Multi-Agent Systems', 'Decentralized AI', 'Protocols'], 
+                    pdfUrl: null 
+                },
+                { 
+                    id: 9, 
+                    tier: 'BRONZE', 
+                    status: 'ACTIVE', 
+                    title: 'Worker: AI App-User', 
+                    description: 'This Large Action Model (LAM) is designed to navigate and use complex application interfaces just like a human. By understanding UI elements and user workflows, the LAM can automate repetitive tasks across various applications, significantly increasing productivity and efficiency.', 
+                    longDescription: 'The "Worker" represents a new class of AI: the Large Action Model (LAM). Unlike traditional RPA (Robotic Process Automation) which relies on brittle selectors and fixed paths, this LAM uses computer vision and transformer models to "see" and "interact" with any software UI—be it a web app, a legacy desktop tool, or a mobile interface. It is trained to understand common UI patterns and business workflows, allowing it to navigate complex screens, input data, and perform multi-step actions autonomously. This enables the automation of highly complex, cross-platform tasks that previously required human intervention, effectively serving as an intelligent digital assistant capable of operating any software tool.',
+                    tech: ['Computer Vision', 'LAM', 'Action Transformers'], 
+                    pdfUrl: null 
+                }
             ];
 
-            const filteredProjects = projects.filter(p => (activeTier === 'ALL' || p.tier === activeTier) && (activeStatus === 'ALL' || p.status === activeStatus));
+            const experiences = [
+                {
+                    role: "Test Lead (ERP)",
+                    company: "CLP Power Limited (ECMS HK Limited)",
+                    period: "2025 – 2026",
+                    highlights: [
+                        "Spearheaded testing governance for massive enterprise-wide ERP implementation using data-driven decisions.",
+                        "Engineered Power BI dashboards for real-time visibility into project health and testing metrics.",
+                        "Championed AI integration within Quality Assurance workflows and led multi-team SIT/UAT phases."
+                    ]
+                },
+                {
+                    role: "Test Lead",
+                    company: "MUFG Pension and Market Services",
+                    period: "2023 – 2024",
+                    highlights: [
+                        "Formulated E2E testing strategy for large-scale pension system implementation and data migration.",
+                        "Built and managed a specialized localization testing team in Hong Kong from scratch.",
+                        "Coached fresh graduates into core technical resources for the organization."
+                    ]
+                },
+                {
+                    role: "SVP, Regional Digital Transformation",
+                    company: "KGI Asia Limited",
+                    period: "2022 – 2023",
+                    highlights: [
+                        "Built and led a specialized Data Team for delivering enterprise-grade data platforms and products.",
+                        "Bridged the gap between business needs and data engineering for securities market solutions.",
+                        "Steered digital transformation initiatives via a digital council to deliver measurable business value."
+                    ]
+                },
+                {
+                    role: "Technical Director",
+                    company: "Jiu Yue Technology Limited",
+                    period: "2020 – 2021",
+                    highlights: [
+                        "Directed strategic roadmap for service delivery and application innovation and AI adoption.",
+                        "Designed future-proof transformation journeys for high-tier enterprise clients."
+                    ]
+                },
+                {
+                    role: "QA Manager",
+                    company: "WeLab Bank",
+                    period: "2019 – 2020",
+                    highlights: [
+                        "Governed system quality and data integrity for a major Virtual Bank implementation.",
+                        "Coordinated agile development teams and vendors for massive functional/operational testing cycles.",
+                        "Ensured a secure and reliable data environment for banking customers."
+                    ]
+                },
+                {
+                    role: "AVP, Quality Assurance Manager",
+                    company: "JPMorgan Chase Bank, N.A.",
+                    period: "Pre-2015 Highlights",
+                    highlights: [
+                        "Built a specialized QA team focused strictly on Data Testing for a massive Data Warehouse implementation.",
+                        "Piloted Scrum adoption and full test automation initiatives within the investment banking sector.",
+                        "Managed APAC QA processes for diverse technology stacks including mobile and localization."
+                    ]
+                }
+            ];
+
+            const strengths = [
+                { subject: 'GenAI / LLMs', value: 82 },
+                { subject: 'Data Strategy', value: 75 },
+                { subject: 'QA Governance', value: 98 },
+                { subject: 'Leadership', value: 94 },
+                { subject: 'ML Engineering', value: 85 },
+                { subject: 'Agile/SDLC', value: 96 },
+            ];
+
+            const filteredProjects = projects.filter(p => activeTier === 'ALL' || p.tier === activeTier);
+
+            const RadarChart = ({ data, size = 300 }) => {
+                const center = size / 2;
+                const radius = (size / 2) * 0.7;
+                const angleStep = (Math.PI * 2) / data.length;
+                const points = data.map((d, i) => {
+                    const x = center + radius * (d.value / 100) * Math.cos(i * angleStep - Math.PI / 2);
+                    const y = center + radius * (d.value / 100) * Math.sin(i * angleStep - Math.PI / 2);
+                    return `${x},${y}`;
+                }).join(' ');
+
+                return (
+                    <svg width={size} height={size} className="mx-auto overflow-visible">
+                        {[0.2, 0.4, 0.6, 0.8, 1].map((p, i) => (
+                            <circle key={i} cx={center} cy={center} r={radius * p} fill="none" stroke="#1e293b" strokeWidth="1" />
+                        ))}
+                        {data.map((d, i) => {
+                            const x = center + radius * Math.cos(i * angleStep - Math.PI / 2);
+                            const y = center + radius * Math.sin(i * angleStep - Math.PI / 2);
+                            const labelX = center + (radius + 35) * Math.cos(i * angleStep - Math.PI / 2);
+                            const labelY = center + (radius + 20) * Math.sin(i * angleStep - Math.PI / 2);
+                            return (
+                                <g key={i}>
+                                    <line x1={center} y1={center} x2={x} y2={y} stroke="#334155" strokeWidth="1" />
+                                    <text x={labelX} y={labelY} textAnchor="middle" className="fill-slate-400 text-[10px] font-bold uppercase tracking-tighter">{d.subject}</text>
+                                </g>
+                            );
+                        })}
+                        <polygon points={points} fill="rgba(59, 130, 246, 0.2)" stroke="#3b82f6" strokeWidth="2" />
+                    </svg>
+                );
+            };
 
             return (
-                <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
-                    <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
-                        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">DAVID HO</span>
-                            <div className="flex gap-8 text-sm font-medium">
-                                <a href="#about" className="text-slate-400 hover:text-blue-400">About</a>
-                                <a href="#projects" className="text-slate-400 hover:text-blue-400">Projects</a>
+                <div className="min-h-screen bg-slate-950 text-slate-200">
+                    {/* Project Modal */}
+                    {selectedProject && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 backdrop-blur-md bg-black/70">
+                            <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col animate-in">
+                                <div className={`h-2 shrink-0 bg-gradient-to-r ${tierStyles[selectedProject.tier].gradient}`}></div>
+                                
+                                <div className="p-6 md:p-10 overflow-y-auto custom-scrollbar">
+                                    <div className="flex justify-between items-start mb-8">
+                                        <div className="pr-4">
+                                            <span className={`text-[10px] font-black tracking-widest uppercase mb-2 block ${tierStyles[selectedProject.tier].text}`}>
+                                                {selectedProject.tier} Tier Project
+                                            </span>
+                                            <h2 className="text-2xl md:text-3xl font-bold text-white leading-tight">
+                                                {selectedProject.title}
+                                            </h2>
+                                        </div>
+                                        <button 
+                                            onClick={() => setSelectedProject(null)} 
+                                            className="shrink-0 p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all shadow-lg border border-slate-700"
+                                            aria-label="Close modal"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-8">
+                                        <div>
+                                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                <span className="w-4 h-px bg-slate-700"></span> Detailed Implementation
+                                            </h4>
+                                            <p className="text-slate-300 leading-relaxed text-base md:text-lg">
+                                                {selectedProject.longDescription}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                <span className="w-4 h-px bg-slate-700"></span> Technical Stack
+                                            </h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedProject.tech.map(t => (
+                                                    <span key={t} className="px-4 py-2 bg-slate-800/80 border border-slate-700/50 rounded-xl text-xs text-slate-400 font-medium">
+                                                        {t}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 md:px-10 md:pb-10 pt-4 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+                                    <div className="flex items-center gap-3">
+                                        <span className={`w-2.5 h-2.5 rounded-full animate-pulse ${selectedProject.status === 'COMPLETED' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]'}`}></span>
+                                        <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+                                            {selectedProject.status}
+                                        </span>
+                                    </div>
+                                    
+                                    {selectedProject.pdfUrl && selectedProject.pdfUrl !== '#' && (
+                                        <a 
+                                            href={selectedProject.pdfUrl} 
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-2xl text-white font-bold transition-all text-center flex items-center justify-center gap-2 group shadow-xl shadow-blue-900/20"
+                                        >
+                                            <span>View Case Study</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Navigation */}
+                    <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 h-16 flex items-center px-6">
+                        <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
+                            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">DAVID HO</span>
+                            <div className="hidden md:flex gap-8 text-sm font-bold text-slate-400">
+                                <a href="#about" className="hover:text-white transition-colors">About</a>
+                                <a href="#experience" className="hover:text-white transition-colors">Experience</a>
+                                <a href="#strength" className="hover:text-white transition-colors">Expertise</a>
+                                <a href="#projects" className="hover:text-white transition-colors">AI Projects</a>
+                                <a href="mailto:yldavid2002@gmail.com" className="text-blue-400 hover:text-blue-300 transition-colors px-4 py-1.5 border border-blue-500/20 rounded-lg bg-blue-500/5">Contact Me</a>
                             </div>
                         </div>
                     </nav>
 
+                    {/* Hero */}
                     <header id="about" className="pt-32 pb-20 px-6 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-                        <div>
+                        <div className="animate-in">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black mb-6 uppercase tracking-widest">
-                                <Trophy size={14} /> Distinguished IT Quality Strategist
+                                <i data-lucide="trophy" className="w-3 h-3"></i> Distinguished Data Science, AI and Quality Strategist
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-                                Data Science & AI <span className="text-blue-500 text-glow">with Quality focus</span>
+                            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+                                AI & Data<br/><span className="text-blue-500 text-glow">with Quality Focus</span>
                             </h1>
-                            <p className="text-lg text-slate-400 mb-8">Strategic adoption of AI Agents and LLMs for enterprise QA.</p>
-                            <a href="mailto:yldavid2002@gmail.com" className="flex items-center gap-2 text-slate-300 hover:text-blue-400"><Mail size={18} /> yldavid2002@gmail.com</a>
+                            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-md">
+                                Empowering software engineering lifecycles through full-scale AI adoption. Over 20 years of expertise in enterprise QA and Data Platforms.
+                            </p>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center gap-3 text-slate-300">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                                        <i data-lucide="mail" className="text-blue-500 w-5 h-5"></i>
+                                    </div>
+                                    <span className="font-medium">yldavid2002@gmail.com</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-300">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                                        <i data-lucide="phone" className="text-blue-500 w-5 h-5"></i>
+                                    </div>
+                                    <span className="font-medium">+852 9600 9373</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="aspect-square bg-slate-900 rounded-[3rem] border border-white/10 flex items-center justify-center overflow-hidden">
-                            {researchImageUrl ? <img src={researchImageUrl} className="w-full h-full object-cover opacity-60" /> : <Terminal size={120} className="text-blue-500/20" />}
+                        <div className="relative aspect-square bg-slate-900/50 rounded-[3rem] border border-white/10 flex items-center justify-center overflow-hidden animate-in shadow-2xl shadow-blue-900/10" style={{animationDelay: '0.2s'}}>
+                            {isGenerating ? (
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="text-blue-400 text-[10px] font-black uppercase tracking-widest">Synthesizing Vision...</div>
+                                </div>
+                            ) : researchImageUrl ? (
+                                <img src={researchImageUrl} className="w-full h-full object-cover opacity-60 transition-opacity duration-1000" alt="AI Research Visual" />
+                            ) : (
+                                <i data-lucide="terminal" className="w-32 h-32 text-blue-500/20"></i>
+                            )}
+                            <div className="absolute bottom-6 left-6 right-6 p-5 bg-slate-950/90 border border-white/10 rounded-3xl backdrop-blur-sm">
+                                <div className="text-[10px] text-blue-400 font-black mb-1 uppercase tracking-widest">Research Mandate</div>
+                                <p className="text-white text-sm italic font-medium leading-relaxed">"Infusing quality in AI evolution and adopting AI for Enterprise QA"</p>
+                            </div>
                         </div>
                     </header>
 
-                    <section id="projects" className="py-20 px-6 max-w-6xl mx-auto">
-                        <h2 className="text-3xl font-bold text-white mb-12">Project Portfolio</h2>
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {filteredProjects.map(p => (
-                                <div key={p.id} className="bg-slate-800/30 border border-slate-700/50 p-8 rounded-3xl hover:border-blue-500 transition-all">
-                                    <h3 className="text-xl font-bold text-white mb-4">{p.title}</h3>
-                                    <p className="text-slate-400 text-sm mb-6">{p.description}</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {p.tech.map(t => <span key={t} className="text-[10px] px-2 py-1 bg-slate-900 rounded border border-slate-700 text-slate-300">{t}</span>)}
+                    {/* Expertise Section */}
+                    <section id="strength" className="py-24 bg-slate-900/20 border-y border-slate-900 px-6">
+                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
+                            <div className="relative shrink-0">
+                                <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full"></div>
+                                <RadarChart data={strengths} size={350} />
+                            </div>
+                            <div className="flex-1">
+                                <h2 className="text-4xl font-bold text-white mb-8 tracking-tight">Expertise Landscape</h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {strengths.map(s => (
+                                        <div key={s.subject} className="bg-slate-900/50 p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition-colors group">
+                                            <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 group-hover:text-blue-400 transition-colors">{s.subject}</div>
+                                            <div className="flex justify-between items-end">
+                                                <div className="text-xl font-bold text-white">{s.value}%</div>
+                                                <div className="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" style={{width: `${s.value}%`}}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Experience Section */}
+                    <section id="experience" className="py-24 px-6 max-w-6xl mx-auto border-b border-slate-900">
+                        <div className="mb-16">
+                            <h2 className="text-4xl font-bold text-white uppercase tracking-tighter mb-2">Professional Journey</h2>
+                            <p className="text-slate-500 text-sm">Actual leadership record in enterprise IT & digital transformation</p>
+                        </div>
+                        <div className="relative border-l-2 border-slate-800 ml-4 md:ml-8 pl-8 md:pl-12 space-y-16">
+                            {experiences.map((exp, idx) => (
+                                <div key={idx} className="relative group">
+                                    <div className="absolute -left-[41px] md:-left-[57px] top-0 w-4 h-4 rounded-full bg-slate-950 border-2 border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)] group-hover:scale-125 transition-transform"></div>
+                                    <div className="animate-in" style={{animationDelay: `${idx * 0.1}s`}}>
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+                                            <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">{exp.role}</h3>
+                                            <span className="text-sm font-black text-slate-500 uppercase tracking-widest bg-slate-900 px-4 py-1.5 rounded-full border border-slate-800 whitespace-nowrap">{exp.period}</span>
+                                        </div>
+                                        <div className="text-lg font-medium text-blue-500/80 mb-6">{exp.company}</div>
+                                        <ul className="space-y-3">
+                                            {exp.highlights.map((h, i) => (
+                                                <li key={i} className="flex items-start gap-3 text-slate-300 leading-relaxed">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></span>
+                                                    <span>{h}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </section>
+
+                    {/* Projects Grid */}
+                    <section id="projects" className="py-24 px-6 max-w-6xl mx-auto">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
+                            <div>
+                                <h2 className="text-4xl font-bold text-white uppercase tracking-tighter mb-2">Project Portfolio</h2>
+                                <p className="text-slate-500 text-sm">Strategic AI implementations across the quality spectrum</p>
+                            </div>
+                            <div className="flex flex-wrap gap-2 p-1.5 bg-slate-900 rounded-2xl border border-slate-800 shrink-0">
+                                {['ALL', 'GOLD', 'BRONZE'].map(t => (
+                                    <button 
+                                        key={t} 
+                                        onClick={() => setActiveTier(t)} 
+                                        className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${activeTier === t ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filteredProjects.map(p => (
+                                <div 
+                                    key={p.id} 
+                                    onClick={() => setSelectedProject(p)} 
+                                    className={`group cursor-pointer bg-slate-900/40 border p-8 rounded-[2.5rem] transition-all hover:scale-[1.03] ${tierStyles[p.tier].border} hover:border-blue-500 shadow-xl shadow-black/20 hover:bg-slate-900/60 flex flex-col h-full`}
+                                >
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${tierStyles[p.tier].bg} ${tierStyles[p.tier].text}`}>
+                                            {p.tier} Tier
+                                        </div>
+                                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tight">{p.status}</span>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors leading-tight">{p.title}</h3>
+                                    <p className="text-slate-400 text-sm mb-8 line-clamp-4 leading-relaxed flex-grow">
+                                        {p.description}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-800/50">
+                                        {p.tech.slice(0,3).map(t => <span key={t} className="text-[9px] px-2.5 py-1 bg-slate-950/50 rounded-lg border border-slate-800 text-slate-500 font-medium tracking-tight uppercase">{t}</span>)}
+                                        {p.tech.length > 3 && <span className="text-[9px] px-2.5 py-1 text-slate-600">+{p.tech.length - 3}</span>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="py-24 border-t border-slate-900 px-6 text-center">
+                        <div className="mb-8 flex justify-center gap-6">
+                            <a href="#" className="p-3 bg-slate-900 rounded-2xl border border-slate-800 text-slate-500 hover:text-blue-400 transition-all hover:-translate-y-1"><i data-lucide="linkedin"></i></a>
+                            <a href="#" className="p-3 bg-slate-900 rounded-2xl border border-slate-800 text-slate-500 hover:text-blue-400 transition-all hover:-translate-y-1"><i data-lucide="github"></i></a>
+                        </div>
+                        <p className="text-slate-400 text-sm font-medium mb-4">Strategic AI Transformation • Excellence in Quality Governance</p>
+                        <div className="text-[10px] text-slate-700 font-black uppercase tracking-[0.2em]">© 2026 David Ho • Hong Kong Special Administrative Region</div>
+                    </footer>
                 </div>
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
+        
+        const initLucide = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
+        window.onload = initLucide;
+        setTimeout(initLucide, 500);
     </script>
 </body>
 </html>
