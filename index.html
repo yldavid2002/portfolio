@@ -1,40 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Github, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  ExternalLink, 
-  Award, 
-  Terminal, 
-  Database, 
-  Cpu, 
-  Briefcase, 
-  GraduationCap, 
-  Trophy,
-  ChevronRight,
-  Code,
-  Clock,
-  CheckCircle2,
-  Filter,
-  FileText,
-  X,
-  Target,
-  Zap,
-  ShieldCheck,
-  Search,
-  Network,
-  UserCog
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>David Ho | AI & Quality Portfolio</title>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
+    <script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
+    <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
+    <!-- Add Lucide Icons -->
+    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // PASTE THE ENTIRE REACT CODE FROM THE CANVAS HERE
+        // (Ensure you remove the "import" statements at the top as we use scripts above)
+        const App = () => {
+		const [activeTier, setActiveTier] = useState('ALL');
+		const [activeStatus, setActiveStatus] = useState('ALL');
+		const [selectedProject, setSelectedProject] = useState(null);
+		const [researchImageUrl, setResearchImageUrl] = useState("");
+		const [isGenerating, setIsGenerating] = useState(false);
 
-const App = () => {
-  const [activeTier, setActiveTier] = useState('ALL');
-  const [activeStatus, setActiveStatus] = useState('ALL');
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [researchImageUrl, setResearchImageUrl] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const apiKey = "";
+		const apiKey = "";
 
   useEffect(() => {
     const generateResearchImage = async () => {
@@ -534,3 +523,12 @@ const App = () => {
 };
 
 export default App;
+        const { useState, useEffect } = React;
+        // ... rest of the code ...
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
