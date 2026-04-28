@@ -4,531 +4,186 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>David Ho | AI & Quality Portfolio</title>
+    <!-- Dependencies -->
     <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
     <script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
     <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
-    <!-- Add Lucide Icons -->
     <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+    <style>
+        .text-glow { text-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoom-in { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-in { animation: fade-in 0.3s ease-out; }
+        .zoom-in { animation: zoom-in 0.3s ease-out; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-950">
     <div id="root"></div>
+
     <script type="text/babel">
-        // PASTE THE ENTIRE REACT CODE FROM THE CANVAS HERE
-        // (Ensure you remove the "import" statements at the top as we use scripts above)
-        const App = () => {
-		const [activeTier, setActiveTier] = useState('ALL');
-		const [activeStatus, setActiveStatus] = useState('ALL');
-		const [selectedProject, setSelectedProject] = useState(null);
-		const [researchImageUrl, setResearchImageUrl] = useState("");
-		const [isGenerating, setIsGenerating] = useState(false);
-
-		const apiKey = "";
-
-  useEffect(() => {
-    const generateResearchImage = async () => {
-      setIsGenerating(true);
-      try {
-        const prompt = "A highly professional, futuristic, and clean concept art representing 'AI Quality Assurance and Autonomous Agents'. The visual should feature a sophisticated neural network structure overlapping with precise, semi-transparent blueprints and quality checkmarks. Soft blue and teal neon lighting on a dark slate background. High-tech, authoritative, and academic research aesthetic.";
-        
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-          })
-        });
-
-        if (!response.ok) throw new Error('Generation failed');
-        const result = await response.json();
-        const base64 = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-        if (base64) {
-          setResearchImageUrl(`data:image/png;base64,${base64}`);
-        }
-      } catch (error) {
-        console.error("Error generating image:", error);
-      } finally {
-        setIsGenerating(false);
-      }
-    };
-
-    generateResearchImage();
-  }, []);
-
-  // Color Mapping based on Tier
-  const tierColors = {
-    GOLD: 'from-amber-300 via-yellow-500 to-amber-600',
-    SILVER: 'from-slate-200 via-slate-400 to-slate-500',
-    BRONZE: 'from-orange-400 via-orange-600 to-amber-800'
-  };
-
-  // Radar Chart Data: Scaled 0-100
-  const strengths = [
-    { subject: 'GenAI / LLMs', value: 90 },
-    { subject: 'Data Strategy', value: 80 },
-    { subject: 'QA Governance', value: 98 },
-    { subject: 'Leadership', value: 88 },
-    { subject: 'ML Engineering', value: 80 },
-    { subject: 'Agile/SDLC', value: 95 },
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      tier: 'BRONZE',
-      status: 'COMPLETED',
-      title: 'Test Strategy Advisor',
-      description: 'Innovative AI Agent utilizing Model Context Protocol (MCP) and LLM to automate software test strategies from project documentation.',
-      longDescription: 'This project focuses on the intersection of AI and QA. By leveraging skills via MCP, the agent can "read" project requirements and background to propose a risk-based testing strategy. It uses LangGraph for agentic reasoning loops, ensuring the output aligns with Quality Requirement Framework.',
-      tech: ['MCP', 'LangGraph', 'LLM', 'RAG'],
-      color: tierColors.BRONZE,
-      pdfUrl: '#' 
-    },
-    {
-      id: 2,
-      tier: 'BRONZE',
-      status: 'COMPLETED',
-      title: 'Predictive Loan Approval Engine',
-      description: 'High-precision (95%) financial assessment model using complex machine learning for Personal Loan Approval.',
-      longDescription: 'A machine learning solution designed for the financial sector. It implements XGBoost and LightGBM for binary classification of loan applications. The project focuses on precision instead of accuracy due to the sensitivity nature of the financial industry.',
-      tech: ['XGBoost', 'LightGBM', 'Python'],
-      color: tierColors.BRONZE,
-      pdfUrl: '#' 
-    },
-    {
-      id: 3,
-      tier: 'BRONZE',
-      status: 'COMPLETED',
-      title: 'Bitcoin Market Analytics',
-      description: 'Real-time data pipeline and BI dashboarding for cryptocurrency trends and volatility analysis.',
-      longDescription: 'An end-to-end data engineering project. It ingests real-time exchange data via APIs, processes it through a SQL database, and visualizes market volatility and moving average crossovers in Power BI.',
-      tech: ['Python', 'Power BI', 'SQL'],
-      color: tierColors.BRONZE,
-      pdfUrl: '#' 
-    },
-    {
-      id: 4,
-      tier: 'GOLD',
-      status: 'COMPLETED',
-      title: 'Quality Requirement Framework',
-      description: 'Industry-proven quality requirement framework that fits for all kinds of project implementation.',
-      longDescription: 'A master-level framework refined over 20 years in enterprise QA. This framework provides a standardized set of testing activities including correctness, performance, compatibility, usability accessibility, localization, location, battery, security, cost, operational and data that fits all types of system implementation.',
-      tech: ['Testing', 'Test Strategy', 'Test Plannning'],
-      color: tierColors.GOLD,
-      pdfUrl: '#' 
-    },
-    {
-      id: 5,
-      tier: 'BRONZE',
-      status: 'ACTIVE',
-      title: 'AI-powered Traceability Matrix',
-      description: 'Automated semantic mapping between business requirements and test cases to ensure its coverage.',
-      longDescription: 'This research project aims to eliminate the manual overhead of maintaining Requirement Traceability Matrices (RTM). By using LangGraph, the system analyzes test coverage by analyzing the semantic relationship between requirement documentation and existing test case repositories.',
-      tech: ['RTM', 'LangGraph', 'LLM'],
-      color: tierColors.BRONZE,
-      pdfUrl: null
-    },
-    {
-      id: 6,
-      tier: 'BRONZE',
-      status: 'ACTIVE',
-      title: 'Critical Path Finder',
-      description: 'With LLM support, analyse the project timeline to identify the critical path.',
-      longDescription: 'Accurate critical path identification is a cornerstone of project success. However, as project complexity scales, traditional methodologies often struggle to capture dynamic interdependencies. This solution leverages LLM intelligence to autonomously analyze project workflows and timelines, uncovering hidden dependencies and providing real-time critical path visibility beyond the capabilities of standard Gantt charts.',
-      tech: ['Vector Database', 'LLM', 'Project Management'],
-      color: tierColors.BRONZE,
-      pdfUrl: null
-    },
-    {
-      id: 7,
-      tier: 'BRONZE',
-      status: 'ACTIVE',
-      title: 'AI Governance Framework',
-      description: 'A comprehensive governance framework establishing quality benchmarks for AI-generated content to mitigate hallucination risks and ensure enterprise-grade safety.',
-      longDescription: 'This multi-layered governance framework establishes a robust "Quality Agent" for AI adoption. It evaluates the AI generated contents against the predefined quality attributes to monitor outputs for hallucinations, harmful biases, cultural difference, and technical inaccuracies in real-time. By implementing rigorous quality requirement framework, the framework ensures that AI-generated artifacts remain good quality.',
-      tech: ['LLM-as-a-Judge', 'Governance', 'Quality'],
-      color: tierColors.BRONZE,
-      pdfUrl: null
-    },
-    {
-      id: 8,
-      tier: 'BRONZE',
-      status: 'ACTIVE',
-      title: 'Internet of AI',
-      description: 'Research into the next generation of AI evolution against superintelligence.',
-      longDescription: 'While current industry trends focus on achieving superintelligence through single, monolithic models, this research posits that true exponential growth in AI utility mirrors human societal evolution: through collaboration rather than individual intelligence. The "Internet of AI" project aims to define a decentralized communication protocol and framework that enables heterogeneous AI agents to discover, negotiate, and collaborate across the web. By shifting from isolated models to an open, networked ecosystem of specialized intelligences, this research develops prototypes for collective problem-solving that transcends the limitations of any single architecture.',
-      tech: ['Internet of AI', 'Multi-Agent Systems', 'Decentralized AI'],
-      color: tierColors.BRONZE,
-      pdfUrl: null
-    },
-    {
-      id: 9,
-      tier: 'BRONZE',
-      status: 'ACTIVE',
-      title: 'Worker: AI App-User',
-      description: 'An advanced Large Action Model (LAM) designed to interpret business-level instructions and autonomously navigate complex application interfaces through learned interaction patterns.',
-      longDescription: 'The "Worker" initiative represents a paradigm shift from traditional Robotic Process Automation (RPA) toward autonomous Large Action Models (LAMs). By employing computer vision and action-based transformers, this system navigates enterprise software as a human would—by interpreting visual UI elements rather than relying on brittle backend selectors or APIs. This research focuses on the end-to-end automation of complex operational workflows, including environment orchestration, cross-platform data synchronization, and automated defect logging in legacy systems, effectively bridging the gap between static AI reasoning and dynamic software interaction.',
-      tech: ['Computer Vision', 'LAM', 'Action Transformers'],
-      color: tierColors.BRONZE,
-      pdfUrl: null
-    }
-  ];
-
-  const filteredProjects = projects.filter(p => {
-    const tierMatch = activeTier === 'ALL' || p.tier === activeTier;
-    const statusMatch = activeStatus === 'ALL' || p.status === activeStatus;
-    return tierMatch && statusMatch;
-  });
-
-  const RadarChart = ({ data, size = 300 }) => {
-    const center = size / 2;
-    const radius = (size / 2) * 0.7;
-    const angleStep = (Math.PI * 2) / data.length;
-
-    const points = data.map((d, i) => {
-      const x = center + radius * (d.value / 100) * Math.cos(i * angleStep - Math.PI / 2);
-      const y = center + radius * (d.value / 100) * Math.sin(i * angleStep - Math.PI / 2);
-      return `${x},${y}`;
-    }).join(' ');
-
-    const axes = data.map((d, i) => {
-      const x = center + radius * Math.cos(i * angleStep - Math.PI / 2);
-      const y = center + radius * Math.sin(i * angleStep - Math.PI / 2);
-      const labelX = center + (radius + 35) * Math.cos(i * angleStep - Math.PI / 2);
-      const labelY = center + (radius + 20) * Math.sin(i * angleStep - Math.PI / 2);
-      return (
-        <g key={i}>
-          <line x1={center} y1={center} x2={x} y2={y} stroke="#334155" strokeWidth="1" />
-          <text 
-            x={labelX} 
-            y={labelY} 
-            textAnchor="middle" 
-            className="fill-slate-400 text-[10px] font-bold uppercase tracking-tighter"
-          >
-            {d.subject}
-          </text>
-        </g>
-      );
-    });
-
-    const circles = [0.2, 0.4, 0.6, 0.8, 1].map((p, i) => (
-      <circle key={i} cx={center} cy={center} r={radius * p} fill="none" stroke="#1e293b" strokeWidth="1" />
-    ));
-
-    return (
-      <svg width={size} height={size} className="mx-auto overflow-visible">
-        {circles}
-        {axes}
-        <polygon points={points} fill="rgba(59, 130, 246, 0.2)" stroke="#3b82f6" strokeWidth="2" />
-      </svg>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-500/30">
-      {/* Modal */}
-      {selectedProject && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md bg-black/60">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className={`h-2 bg-gradient-to-r ${selectedProject.color}`}></div>
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <span className={`text-[10px] font-black tracking-widest uppercase mb-2 block ${
-                    selectedProject.tier === 'GOLD' ? 'text-yellow-500' : 'text-blue-400'
-                  }`}>
-                    {selectedProject.tier} Tier Project
-                  </span>
-                  <h2 className="text-3xl font-bold text-white">{selectedProject.title}</h2>
-                </div>
-                <button onClick={() => setSelectedProject(null)} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
-                  <X size={24} />
-                </button>
-              </div>
-              
-              <div className="space-y-6">
-                <p className="text-slate-300 leading-relaxed text-lg">
-                  {selectedProject.longDescription}
-                </p>
-                
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.tech.map(t => (
-                    <span key={t} className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-full text-xs text-slate-400">{t}</span>
-                  ))}
-                </div>
-
-                <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {selectedProject.status === 'COMPLETED' ? (
-                      <span className="text-emerald-400 flex items-center gap-1 text-sm font-bold bg-emerald-400/10 px-3 py-1 rounded-full"><CheckCircle2 size={16} /> Verified Result</span>
-                    ) : (
-                      <span className="text-amber-400 flex items-center gap-1 text-sm font-bold bg-amber-400/10 px-3 py-1 rounded-full"><Clock size={16} /> Current Research</span>
-                    )}
-                  </div>
-                  
-                  {selectedProject.pdfUrl && selectedProject.pdfUrl !== '#' && (
-                    <a 
-                      href={selectedProject.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all w-full md:w-auto justify-center"
-                    >
-                      <FileText size={18} /> View Case Study PDF
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-            DAVID HO
-          </span>
-          <div className="hidden md:flex gap-8 text-sm font-medium">
-            <a href="#about" className="hover:text-blue-400 transition-colors text-slate-400">About</a>
-            <a href="#strength" className="hover:text-blue-400 transition-colors text-slate-400">Strength</a>
-            <a href="#projects" className="hover:text-blue-400 transition-colors text-slate-400">AI Projects</a>
-            <a href="#experience" className="hover:text-blue-400 transition-colors text-slate-400">Experience</a>
-            <a href="#contact" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition-all text-white">Contact Me</a>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <header id="about" className="pt-32 pb-20 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black mb-6 tracking-widest uppercase">
-              <Trophy size={14} /> Distinguished IT Quality Strategist, Data Science and AI Scholar
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-              Data Science & AI<br />
-              <span className="text-blue-500 text-glow">with Quality focus</span>
-            </h1>
-            <p className="text-lg text-slate-400 mb-8 max-w-lg leading-relaxed">
-              Accelerating SDLC and Quality Assurance through the strategic adoption of AI Agents and LLMs. Combining 20 years of IT leadership with modern data science.
-              Infusing quality in AI evolution. 
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 text-slate-300">
-                <Mail size={18} className="text-blue-500" /> yldavid2002@gmail.com
-              </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <Phone size={18} className="text-blue-500" /> +852 9600 9373
-              </div>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="w-full aspect-square bg-gradient-to-br from-blue-600/10 to-indigo-600/10 rounded-[3rem] border border-white/10 flex items-center justify-center relative overflow-hidden group shadow-2xl">
-               <div className="absolute inset-0 bg-slate-900/40"></div>
-               
-               {isGenerating ? (
-                 <div className="flex flex-col items-center gap-4 z-10">
-                    <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    <span className="text-blue-400 text-xs font-bold animate-pulse">GENERATING RESEARCH IMAGE...</span>
-                 </div>
-               ) : researchImageUrl ? (
-                 <img src={researchImageUrl} alt="Research Focus" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" />
-               ) : (
-                 <Terminal size={120} className="text-blue-500/30 group-hover:scale-110 transition-transform duration-700" />
-               )}
-
-               <div className="absolute bottom-8 left-8 right-8 p-6 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl z-20">
-                  <div className="text-xs text-blue-400 font-bold mb-1 tracking-widest uppercase">Research Focus</div>
-                  <div className="text-white font-medium italic">"Infusing quality in AI evolution and adopting AI for Enterprise QA"</div>
-               </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Strengths */}
-      <section id="strength" className="py-20 px-6 border-y border-slate-900 bg-slate-900/20">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
-          <div className="flex-1 order-2 md:order-1">
-             <RadarChart data={strengths} size={400} />
-          </div>
-          <div className="flex-1 order-1 md:order-2">
-            <div className="inline-flex items-center gap-2 text-blue-500 font-bold text-xs mb-4 uppercase tracking-[0.2em]"><Target size={14}/> Professional DNA</div>
-            <h2 className="text-4xl font-bold text-white mb-6">Expertise Landscape</h2>
-            <p className="text-slate-400 text-lg leading-relaxed mb-8 italic border-l-2 border-blue-500 pl-6">
-              "My strength lies at the intersection of enterprise governance and futuristic AI research. I don't just build models; I build frameworks that ensure AI is safe, quality-assured, and business-ready."
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               {strengths.map((s, idx) => (
-                 <div key={idx} className="flex items-center gap-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/50">
-                    <Zap size={16} className="text-yellow-500" />
-                    <div>
-                      <div className="text-xs text-slate-500 font-bold uppercase">{s.subject}</div>
-                      <div className="text-white font-bold">{s.value}% Mastery</div>
-                    </div>
-                 </div>
-               ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects */}
-      <section id="projects" className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-2">Project Portfolio</h2>
-            <p className="text-slate-400 mb-8">Click on any project to view detailed architecture and documentation.</p>
-            
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-              <div className="flex flex-wrap items-center gap-3">
-                {['ALL', 'GOLD', 'SILVER', 'BRONZE'].map((tier) => (
-                  <button
-                    key={tier}
-                    onClick={() => setActiveTier(tier)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      activeTier === tier ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {tier}
-                  </button>
-                ))}
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                {['ALL', 'ACTIVE', 'COMPLETED'].map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setActiveStatus(status)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      activeStatus === status ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <div 
-                key={project.id} 
-                onClick={() => setSelectedProject(project)}
-                className="group cursor-pointer relative bg-slate-800/30 border border-slate-700/50 p-8 rounded-3xl hover:border-slate-500 transition-all hover:-translate-y-2"
-              >
-                <div className="flex justify-between items-start mb-6">
-                   <div className={`w-12 h-1 bg-gradient-to-r ${project.color} rounded-full`}></div>
-                   <span className="text-[10px] font-bold text-slate-500 uppercase">{project.status}</span>
-                </div>
-
-                <div className={`text-[10px] font-black tracking-widest mb-2 uppercase ${
-                  project.tier === 'GOLD' ? 'text-yellow-500' : 'text-blue-400'
-                }`}>
-                  {project.tier} TIER
-                </div>
-                
-                <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-slate-400 text-sm mb-6 leading-relaxed line-clamp-3">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {project.tech.map(t => (
-                    <span key={t} className="text-[10px] px-2 py-1 bg-slate-900/50 rounded border border-slate-700 text-slate-300">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between text-sm font-bold text-white">
-                  <span>Details</span>
-                  <ChevronRight size={16} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Career */}
-      <section id="experience" className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-12 flex items-center gap-4">
-            <Briefcase className="text-blue-500" /> Career Milestones
-          </h2>
-          
-          <div className="space-y-12 relative before:absolute before:left-[17px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
-            {[
-              {
-                role: 'Test Lead (Enterprise ERP)',
-                company: 'CLP Power Limited',
-                period: '2025 - 2026',
-                desc: 'Strategic oversight of system quality for large-scale enterprise modernization of ERP.'
-              },
-              {
-                role: 'SVP, Regional Digital Transformation',
-                company: 'KGI Asia Limited',
-                period: '2022 - 2023',
-                desc: 'Championed regional data strategies and digital adoption across APAC offices.'
-              },
-              {
-                role: 'Technical Director',
-                company: 'Jiu Yue Technology',
-                period: '2020 - 2021',
-                desc: 'Transformation leader focused on application innovation, software testing and AI implementation.'
-              },
-              {
-                role: 'AVP, Quality Assurance Manager',
-                company: 'JPMorgan Chase Bank',
-                period: 'Early Career',
-                desc: 'Pioneered complex Data Testing frameworks for massive enterprise data warehouse environments.'
-              }
-            ].map((exp, idx) => (
-              <div key={idx} className="relative pl-12 group">
-                <div className="absolute left-0 top-1 w-9 h-9 bg-slate-950 border-2 border-slate-800 rounded-full flex items-center justify-center group-hover:border-blue-500 transition-colors">
-                  <div className="w-2 h-2 bg-slate-700 group-hover:bg-blue-500 rounded-full transition-colors"></div>
-                </div>
-                <span className="text-xs font-bold text-blue-500 mb-1 block tracking-widest">{exp.period}</span>
-                <h3 className="text-xl font-bold text-white mb-1">{exp.role}</h3>
-                <div className="text-slate-400 font-medium mb-3">{exp.company}</div>
-                <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">{exp.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer id="contact" className="py-20 border-t border-slate-800 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div>
-            <div className="text-2xl font-bold text-white mb-2">Let's connect the <span className="text-blue-500">future</span>.</div>
-            <p className="text-slate-500 text-sm">Strategic AI Transformation & Quality Governance.</p>
-          </div>
-          <div className="flex gap-4">
-            <a href="mailto:yldavid2002@gmail.com" className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 transition-all text-white">
-              <Mail size={20} />
-            </a>
-          </div>
-        </div>
-        <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-slate-900 text-center text-slate-600 text-[10px] tracking-widest uppercase font-bold">
-          © 2026 David Ho • Strategic AI Governance • Hong Kong
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-export default App;
         const { useState, useEffect } = React;
-        // ... rest of the code ...
+        const { 
+            Github, Linkedin, Mail, Phone, ExternalLink, Award, Terminal, 
+            Database, Cpu, Briefcase, GraduationCap, Trophy, ChevronRight, 
+            Code, Clock, CheckCircle2, Filter, FileText, X, Target, Zap, 
+            ShieldCheck, Search, Network, UserCog 
+        } = lucide;
+
+        const App = () => {
+            const [activeTier, setActiveTier] = useState('ALL');
+            const [activeStatus, setActiveStatus] = useState('ALL');
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [researchImageUrl, setResearchImageUrl] = useState("");
+            const [isGenerating, setIsGenerating] = useState(false);
+
+            const apiKey = ""; // Add your key here if needed
+
+            useEffect(() => {
+                const generateResearchImage = async () => {
+                    if(!apiKey) return;
+                    setIsGenerating(true);
+                    try {
+                        const prompt = "A highly professional, futuristic, and clean concept art representing 'AI Quality Assurance and Autonomous Agents'. The visual should feature a sophisticated neural network structure overlapping with precise, semi-transparent blueprints and quality checkmarks. Soft blue and teal neon lighting on a dark slate background. High-tech, authoritative, and academic research aesthetic.";
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: prompt }] }],
+                                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                            })
+                        });
+                        const result = await response.json();
+                        const base64 = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                        if (base64) setResearchImageUrl(`data:image/png;base64,${base64}`);
+                    } catch (error) {
+                        console.error("Error:", error);
+                    } finally {
+                        setIsGenerating(false);
+                    }
+                };
+                generateResearchImage();
+            }, []);
+
+            const tierColors = {
+                GOLD: 'from-amber-300 via-yellow-500 to-amber-600',
+                SILVER: 'from-slate-200 via-slate-400 to-slate-500',
+                BRONZE: 'from-orange-400 via-orange-600 to-amber-800'
+            };
+
+            const strengths = [
+                { subject: 'GenAI / LLMs', value: 90 },
+                { subject: 'Data Strategy', value: 80 },
+                { subject: 'QA Governance', value: 98 },
+                { subject: 'Leadership', value: 88 },
+                { subject: 'ML Engineering', value: 80 },
+                { subject: 'Agile/SDLC', value: 95 },
+            ];
+
+            const projects = [
+                { id: 4, tier: 'GOLD', status: 'COMPLETED', title: 'Quality Requirement Framework', description: 'Industry-proven quality requirement framework for all kinds of project implementation.', longDescription: 'A master-level framework refined over 20 years in enterprise QA. Provides a standardized set of testing activities including correctness, performance, compatibility, usability, and more.', tech: ['Testing', 'Test Strategy', 'Test Planning'], color: tierColors.GOLD, pdfUrl: '#' },
+                { id: 1, tier: 'BRONZE', status: 'COMPLETED', title: 'Test Strategy Advisor', description: 'AI Agent utilizing MCP to automate software test strategies.', longDescription: 'Leverages LangGraph for agentic reasoning loops to propose risk-based testing strategies.', tech: ['MCP', 'LangGraph', 'LLM', 'RAG'], color: tierColors.BRONZE, pdfUrl: '#' },
+                { id: 7, tier: 'BRONZE', status: 'ACTIVE', title: 'AI Governance Framework', description: 'Governance for AI-generated content to mitigate hallucination risks.', longDescription: 'Establishes a "Quality Agent" to monitor outputs for bias, cultural differences, and technical inaccuracies.', tech: ['LLM-as-a-Judge', 'Governance', 'Quality'], color: tierColors.BRONZE, pdfUrl: null }
+            ];
+
+            const filteredProjects = projects.filter(p => (activeTier === 'ALL' || p.tier === activeTier) && (activeStatus === 'ALL' || p.status === activeStatus));
+
+            const RadarChart = ({ data, size = 300 }) => {
+                const center = size / 2;
+                const radius = (size / 2) * 0.7;
+                const angleStep = (Math.PI * 2) / data.length;
+                const points = data.map((d, i) => {
+                    const x = center + radius * (d.value / 100) * Math.cos(i * angleStep - Math.PI / 2);
+                    const y = center + radius * (d.value / 100) * Math.sin(i * angleStep - Math.PI / 2);
+                    return `${x},${y}`;
+                }).join(' ');
+
+                return (
+                    <svg width={size} height={size} className="mx-auto overflow-visible">
+                        {[0.2, 0.4, 0.6, 0.8, 1].map((p, i) => <circle key={i} cx={center} cy={center} r={radius * p} fill="none" stroke="#1e293b" strokeWidth="1" />)}
+                        {data.map((d, i) => {
+                            const x = center + radius * Math.cos(i * angleStep - Math.PI / 2);
+                            const y = center + radius * Math.sin(i * angleStep - Math.PI / 2);
+                            const lx = center + (radius + 35) * Math.cos(i * angleStep - Math.PI / 2);
+                            const ly = center + (radius + 20) * Math.sin(i * angleStep - Math.PI / 2);
+                            return (
+                                <g key={i}>
+                                    <line x1={center} y1={center} x2={x} y2={y} stroke="#334155" />
+                                    <text x={lx} y={ly} textAnchor="middle" className="fill-slate-400 text-[10px] font-bold uppercase">{d.subject}</text>
+                                </g>
+                            );
+                        })}
+                        <polygon points={points} fill="rgba(59, 130, 246, 0.2)" stroke="#3b82f6" strokeWidth="2" />
+                    </svg>
+                );
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
+                    {/* Simplified Navbar */}
+                    <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+                        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">DAVID HO</span>
+                            <div className="hidden md:flex gap-8 text-sm font-medium">
+                                <a href="#about" className="text-slate-400 hover:text-blue-400">About</a>
+                                <a href="#projects" className="text-slate-400 hover:text-blue-400">AI Projects</a>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <header id="about" className="pt-32 pb-20 px-6 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black mb-6 uppercase tracking-widest">
+                                <Trophy size={14} /> Distinguished IT Quality Strategist
+                            </div>
+                            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+                                Data Science & AI <span className="text-blue-500 text-glow">with Quality focus</span>
+                            </h1>
+                            <p className="text-lg text-slate-400 mb-8">Accelerating SDLC through strategic adoption of AI Agents and LLMs.</p>
+                            <div className="flex gap-4">
+                                <a href="mailto:yldavid2002@gmail.com" className="flex items-center gap-2 text-slate-300 hover:text-blue-400"><Mail size={18} /> Email Me</a>
+                            </div>
+                        </div>
+                        <div className="relative aspect-square bg-slate-900 rounded-[3rem] border border-white/10 flex items-center justify-center overflow-hidden">
+                            {researchImageUrl ? (
+                                <img src={researchImageUrl} className="w-full h-full object-cover opacity-60" />
+                            ) : (
+                                <Terminal size={120} className="text-blue-500/20" />
+                            )}
+                            <div className="absolute bottom-8 left-8 right-8 p-6 bg-slate-900/90 backdrop-blur-xl rounded-2xl border border-white/10">
+                                <div className="text-xs text-blue-400 font-bold mb-1 uppercase tracking-widest">Research Focus</div>
+                                <div className="text-white italic">"Infusing quality in AI evolution"</div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Projects Section */}
+                    <section id="projects" className="py-20 px-6 max-w-6xl mx-auto">
+                        <h2 className="text-3xl font-bold text-white mb-12">Project Portfolio</h2>
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {filteredProjects.map(p => (
+                                <div key={p.id} className="bg-slate-800/30 border border-slate-700/50 p-8 rounded-3xl hover:border-blue-500 transition-all">
+                                    <div className={`text-[10px] font-black mb-2 uppercase ${p.tier === 'GOLD' ? 'text-yellow-500' : 'text-blue-400'}`}>{p.tier} Tier</div>
+                                    <h3 className="text-xl font-bold text-white mb-4">{p.title}</h3>
+                                    <p className="text-slate-400 text-sm mb-6 line-clamp-3">{p.description}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {p.tech.map(t => <span key={t} className="text-[10px] px-2 py-1 bg-slate-900 rounded border border-slate-700 text-slate-300">{t}</span>)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <footer className="py-20 border-t border-slate-900 text-center text-slate-600 text-[10px] uppercase font-bold tracking-widest">
+                        © 2026 David Ho • Hong Kong
+                    </footer>
+                </div>
+            );
+        };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
 </body>
 </html>
-
